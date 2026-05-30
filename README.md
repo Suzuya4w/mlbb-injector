@@ -20,6 +20,10 @@ A high-performance, cyberpunk-themed desktop application built with **Tauri 2 (R
 - 🌐 **Bilingual Support:** Instantly switch between English (`[ EN ]`) and Indonesian (`[ ID ]`) languages.
 - 🎨 **Cyberpunk Aesthetic:** Smooth hardware-accelerated CSS animations, Fira Code typography, and a glowing neon hacker interface.
 
+### 💡 Creating Custom ZIP Mods
+To ensure your custom mods work perfectly in-game, you **MUST** accurately replicate the original sub-folder structure inside your ZIP file. 
+For example, if your modified skin file originally resides in `Art/android/111/`, your ZIP must contain the exact `Art/android/111/` folders. Do not place the files at the root of the ZIP!
+
 ## 🚀 Prerequisites
 
 - Developer Mode and **USB Debugging** must be enabled on your Android device.

@@ -97,6 +97,7 @@ const DICT = {
     btn_yes: "YES, PROCEED",
     btn_cancel: "CANCEL",
     toast_device_not_detected: "No device detected",
+    zip_structure_tip: "💡 IMPORTANT: WHEN CREATING CUSTOM MOD ZIPS, REPLICATE THE ORIGINAL SUB-FOLDER STRUCTURE EXACTLY (E.G., Art/android/...).",
 
     log_boot: "SYSTEM BOOT UP SEQUENCE...",
     log_connecting: "CONNECTING TO ADB DAEMON...",
@@ -192,6 +193,7 @@ const DICT = {
     btn_yes: "YA, LANJUTKAN",
     btn_cancel: "BATAL",
     toast_device_not_detected: "Perangkat tidak terdeteksi",
+    zip_structure_tip: "💡 PENTING: SAAT MEMBUAT ZIP MOD, PASTIKAN STRUKTUR SUB-FOLDER ASLINYA DITIRU SECARA PERSIS (MISAL: Art/android/...).",
 
     log_boot: "MEMULAI URUTAN BOOT SISTEM...",
     log_connecting: "MENGHUBUNGKAN KE DAEMON ADB...",
@@ -708,6 +710,10 @@ function App() {
                                 {t("install")}
                             </button>
                         </div>
+                    </div>
+                    
+                    <div class="mt-4 text-[#FF8A00] text-[10px] text-center font-bold tracking-widest border border-[#FF8A00]/30 bg-[#FF8A00]/10 py-2 px-4 shadow-[0_0_10px_rgba(255,138,0,0.1)]">
+                        {t("zip_structure_tip")}
                     </div>
                 </div>
 

@@ -1,6 +1,6 @@
 [package]
 name = "mlbb-injector"
-version = "1.2.6"
+version = "1.2.7"
 description = "A high-performance cyberpunk-themed desktop application built with Tauri (Rust + SolidJS) to seamlessly manage Mobile Legends assets directly via ADB."
 authors = ["Suzuya4w"]
 edition = "2021"
