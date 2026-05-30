@@ -476,7 +476,7 @@ pub async fn inject_zip_script(
                     _dest_path_on_device =
                         "/sdcard/Android/data/com.mobile.legends/files/dragon2017/assets";
                     break;
-                } else if name == "Art" || name == "Audio" || name == "UI" || name == "Document" {
+                } else if name == "Art" || name == "Audio" || name == "UI" || name == "Document" || name == "AstcInPack" {
                     target_dir = Some(entry.path().parent().unwrap().to_path_buf());
                     _dest_path_on_device =
                         "/sdcard/Android/data/com.mobile.legends/files/dragon2017/assets";
