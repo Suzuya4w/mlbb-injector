@@ -1,6 +1,8 @@
 # MLBB Asset Tool & Mod Injector
 
-![MLBB Injector Logo](public/app_logo.png)
+<div align="center">
+  <img src="public/app_logo.png" width="250" alt="MLBB Injector Logo">
+</div>
 
 A high-performance, cyberpunk-themed desktop application built with **Tauri 2 (Rust + SolidJS)** to seamlessly manage Mobile Legends: Bang Bang assets on Android devices. This tool bypasses the need for manual file managers by interacting directly with the Android filesystem via ADB.
 
@@ -14,9 +16,8 @@ A high-performance, cyberpunk-themed desktop application built with **Tauri 2 (R
 
 ## 🚀 Prerequisites
 
-- **ADB (Android Debug Bridge)** must be installed and added to your system PATH.
 - Developer Mode and **USB Debugging** must be enabled on your Android device.
-- **Node.js** (v18+) and **Rust** installed on your PC.
+- **Node.js** (v18+) and **Rust** installed on your PC (for development only).
 
 ## 🛠️ Development
 
