@@ -2,7 +2,7 @@ mod adb_wrapper;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
@@ -20,7 +20,24 @@ pub fn run() {
             adb_wrapper::delete_preset,
             adb_wrapper::export_presets,
             adb_wrapper::import_presets
-        ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        ]);
+
+    let app = builder.build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    app.run(|_app_handle, event| {
+        match event {
+            tauri::RunEvent::Exit => {
+                #[cfg(target_os = "windows")]
+                {
+                    use std::os::windows::process::CommandExt;
+                    let _ = std::process::Command::new("taskkill")
+                        .args(["/f", "/im", "adb.exe"])
+                        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+                        .output();
+                }
+            }
+            _ => {}
+        }
+    });
 }
