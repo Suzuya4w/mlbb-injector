@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { getVersion } from "@tauri-apps/api/app";
 
 interface ProgressPayload {
   message: String;
@@ -248,6 +249,7 @@ function App() {
 
   const [devices, setDevices] = createSignal<Device[]>([]);
   const [selectedDevice, setSelectedDevice] = createSignal("");
+  const [appVersion, setAppVersion] = createSignal("v1.2.2");
   const [logs, setLogs] = createSignal<string[]>([]);
   const [isInjecting, setIsInjecting] = createSignal(false);
   
@@ -303,6 +305,7 @@ function App() {
   }
 
   onMount(() => {
+    getVersion().then(v => setAppVersion("v" + v)).catch(() => {});
     checkDevices();
     loadPresets();
 
@@ -1010,7 +1013,7 @@ function App() {
                     <div class="flex flex-col gap-3 mt-4 text-sm text-left">
                         <div class="flex justify-between border-b border-white/10 pb-2">
                             <span class="text-white/50 font-bold uppercase">{t("about_version")}</span>
-                            <span class="text-[#00F0FF] font-mono tracking-widest">v1.1.0</span>
+                            <span class="text-[#00F0FF] font-mono tracking-widest">{appVersion()}</span>
                         </div>
                         <div class="flex justify-between border-b border-white/10 pb-2">
                             <span class="text-white/50 font-bold uppercase">{t("about_dev")}</span>
