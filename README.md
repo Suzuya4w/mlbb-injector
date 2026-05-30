@@ -42,6 +42,15 @@ Build the final executable (Installer):
 npm run tauri build
 ```
 
+### ⚠️ Troubleshooting (Developer Only)
+
+If you encounter a compilation error similar to `os error 32: The process cannot access the file` while running `npm run tauri dev`, it means the ADB server is currently running in the background and locking the `AdbWinApi.dll` file. 
+
+To fix this, simply kill the ADB process by running the following command in your terminal, then try building again:
+```bash
+taskkill /f /im adb.exe
+```
+
 ## 📜 License
 
 This project is open-source and available under the [Apache License 2.0](LICENSE).
