@@ -8,6 +8,20 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use tauri::{AppHandle, Emitter, Manager};
 
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+
+fn create_command<S: AsRef<std::ffi::OsStr>>(program: S) -> Command {
+    let mut cmd = Command::new(program);
+    #[cfg(target_os = "windows")]
+    {
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    cmd
+}
+
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ProgressPayload {
     pub message: String,
@@ -57,7 +71,7 @@ fn get_adb_path(app_handle: &AppHandle) -> Result<String, AdbError> {
 #[tauri::command]
 pub fn get_devices(app_handle: AppHandle) -> Result<Vec<String>, AdbError> {
     let adb_path = get_adb_path(&app_handle)?;
-    let output = Command::new(&adb_path)
+    let output = create_command(&adb_path)
         .args(["devices"])
         .output()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
@@ -142,7 +156,7 @@ pub async fn inject_auto_patch(
 
     // Gunakan find di direktori spesifik
     let find_cmd = format!("cd {} && find Art/android AstcInPack/android Audio/android UI/android -type f -name '*{}*'", base_assets_path, old_id);
-    let find_output = Command::new(&adb_path)
+    let find_output = create_command(&adb_path)
         .args(["-s", &device_id, "shell", &find_cmd])
         .output()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
@@ -185,7 +199,7 @@ pub async fn inject_auto_patch(
     fs::write(&list_txt_path, file_list.join("\n"))
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -201,14 +215,14 @@ pub async fn inject_auto_patch(
         "tar -cf /data/local/tmp/assets.tar -T /data/local/tmp/list.txt -C {}",
         base_assets_path
     );
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args(["-s", &device_id, "shell", &tar_cmd])
         .status()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
     // Pull Tar
     let local_tar = local_temp_dir.join("assets.tar");
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -228,7 +242,7 @@ pub async fn inject_auto_patch(
         },
     );
 
-    Command::new("tar")
+    create_command("tar")
         .args(["-xf", "assets.tar", "-C", "extracted"])
         .current_dir(&local_temp_dir)
         .status()
@@ -279,7 +293,7 @@ pub async fn inject_auto_patch(
             // Wait, old_str might be "Hero538" or "40538" or just "538"?
             // Python patcher replaces exact string. If we replace "538" globally inside unity3d via Python patcher?
             // Actually, patch_bundle replaces raw bytes. So we can just pass "538" and "531".
-            let status = Command::new(&patcher_path)
+            let status = create_command(&patcher_path)
                 .args([
                     path.to_str().unwrap(),
                     &old_id,
@@ -330,14 +344,14 @@ pub async fn inject_auto_patch(
 
     // We cd into extracted_dir to tar so paths are relative to base_assets_path
     // using * might fail if there are many files, but we can just use 	ar -cf ../patched.tar .
-    Command::new("tar")
+    create_command("tar")
         .args(["-cf", "../patched.tar", "."])
         .current_dir(&extracted_dir)
         .status()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
     let patched_tar = local_temp_dir.join("patched.tar");
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -357,7 +371,7 @@ pub async fn inject_auto_patch(
         },
     );
 
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -371,7 +385,7 @@ pub async fn inject_auto_patch(
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
     // Cleanup
-    let _ = Command::new(&adb_path)
+    let _ = create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -423,7 +437,7 @@ pub async fn inject_zip_script(
             },
         );
 
-        let status = Command::new("tar")
+        let status = create_command("tar")
             .args(["-xf", zip_path, "-C", extract_dir.to_str().unwrap()])
             .status()
             .map_err(|e| AdbError::Execution(e.to_string()))?;
@@ -495,7 +509,7 @@ pub async fn inject_zip_script(
         },
     );
     let push_tar_path = local_temp_dir.join("push.tar");
-    Command::new("tar")
+    create_command("tar")
         .args(["-cf", push_tar_path.to_str().unwrap(), "."])
         .current_dir(&master_assets_dir)
         .status()
@@ -509,7 +523,7 @@ pub async fn inject_zip_script(
             progress: 80,
         },
     );
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -532,13 +546,13 @@ pub async fn inject_zip_script(
         "tar -xf /data/local/tmp/push.tar -C {}",
         dest_path_on_device
     );
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args(["-s", &device_id, "shell", &extract_cmd])
         .status()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
     // Cleanup
-    let _ = Command::new(&adb_path)
+    let _ = create_command(&adb_path)
         .args(["-s", &device_id, "shell", "rm /data/local/tmp/push.tar"])
         .status();
     let _ = fs::remove_dir_all(&local_temp_dir);
@@ -677,7 +691,7 @@ pub async fn pull_asset(
         base_assets_path, find_condition
     );
 
-    let find_output = Command::new(&adb_path)
+    let find_output = create_command(&adb_path)
         .args(["-s", &device_id, "shell", &find_cmd])
         .output()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
@@ -721,7 +735,7 @@ pub async fn pull_asset(
     fs::write(&list_txt_path, file_list.join("\n"))
         .map_err(|e| AdbError::Execution(format!("Gagal menulis list.txt: {}", e)))?;
 
-    Command::new(&adb_path)
+    create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -744,13 +758,13 @@ pub async fn pull_asset(
         "tar -cf /data/local/tmp/pull_assets.tar -T /data/local/tmp/pull_list.txt -C {}",
         base_assets_path
     );
-    let status = Command::new(&adb_path)
+    let status = create_command(&adb_path)
         .args(["-s", &device_id, "shell", &tar_cmd])
         .status()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
     if !status.success() {
-        let _ = Command::new(&adb_path)
+        let _ = create_command(&adb_path)
             .args([
                 "-s",
                 &device_id,
@@ -772,7 +786,7 @@ pub async fn pull_asset(
     );
 
     let local_tar_path = Path::new(&dest_path).join("pull_assets.tar");
-    let status = Command::new(&adb_path)
+    let status = create_command(&adb_path)
         .args([
             "-s",
             &device_id,
@@ -784,7 +798,7 @@ pub async fn pull_asset(
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
     if !status.success() {
-        let _ = Command::new(&adb_path)
+        let _ = create_command(&adb_path)
             .args([
                 "-s",
                 &device_id,
@@ -805,7 +819,7 @@ pub async fn pull_asset(
         },
     );
 
-    let status = Command::new("tar")
+    let status = create_command("tar")
         .args(["-xf", "pull_assets.tar"])
         .current_dir(&dest_path)
         .status()
@@ -820,7 +834,7 @@ pub async fn pull_asset(
     // Cleanup
     let _ = fs::remove_file(&local_tar_path);
     let _ = fs::remove_dir_all(&local_temp_dir);
-    let _ = Command::new(&adb_path)
+    let _ = create_command(&adb_path)
         .args([
             "-s",
             &device_id,
