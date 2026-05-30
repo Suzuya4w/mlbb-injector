@@ -490,18 +490,21 @@ pub async fn inject_zip_script(
         }
 
         if let Some(target_dir) = target_dir {
-            // Using fs_extra to copy folder contents to master_assets_dir
-            let options = fs_extra::dir::CopyOptions {
-                overwrite: true,
-                skip_exist: false,
-                buffer_size: 64000,
-                copy_inside: true,
-                content_only: true,
-                depth: 0,
-            };
-            if let Err(e) = fs_extra::dir::copy(&target_dir, &master_assets_dir, &options) {
-                // ignore minor copy errors for now, or log them
-                println!("Warning during copy: {}", e);
+            // Traverse target_dir and copy files one by one to master_assets_dir to safely merge
+            for entry in walkdir::WalkDir::new(&target_dir)
+                .into_iter()
+                .filter_map(|e| e.ok())
+            {
+                if entry.file_type().is_file() {
+                    let relative_path = entry.path().strip_prefix(&target_dir).unwrap();
+                    let dest_path = master_assets_dir.join(relative_path);
+                    if let Some(parent) = dest_path.parent() {
+                        let _ = fs::create_dir_all(parent);
+                    }
+                    if let Err(e) = fs::copy(entry.path(), &dest_path) {
+                        println!("Warning during file copy: {}", e);
+                    }
+                }
             }
         } else {
             return Err(AdbError::Execution(

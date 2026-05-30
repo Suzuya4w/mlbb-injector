@@ -315,6 +315,11 @@ function App() {
       if (lang() === "en") {
           // Terjemahan kasar dari log backend Rust (ID -> EN)
           msg = msg.replace("MENGEKSTRAK SCRIPT ZIP", "EXTRACTING ZIP SCRIPT");
+          msg = msg.replace("MEMBUAT PAKET PUSH (TAR)", "CREATING PUSH PACKAGE (TAR)");
+          msg = msg.replace("MENEMBAKKAN SCRIPT KE HP (PUSHING)", "PUSHING SCRIPT TO DEVICE");
+          msg = msg.replace("MEMASANG SCRIPT DI FOLDER GAME", "INSTALLING SCRIPT IN GAME FOLDER");
+          msg = msg.replace("PEMASANGAN SCRIPT ZIP SELESAI!", "ZIP SCRIPT INSTALLATION COMPLETE!");
+          msg = msg.replace("BERHASIL MEMASANG SCRIPT DARI ZIP", "SUCCESSFULLY INSTALLED SCRIPT FROM ZIP");
           msg = msg.replace("MENYALIN", "COPYING");
           msg = msg.replace("INJEKSI SELESAI!", "INJECTION COMPLETE!");
           msg = msg.replace("MENGUNDUH MOD DARI TAUTAN MEDIAFIRE...", "DOWNLOADING MOD FROM MEDIAFIRE LINK...");
