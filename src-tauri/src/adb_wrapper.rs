@@ -45,7 +45,7 @@ fn get_adb_path(app_handle: &AppHandle) -> Result<String, AdbError> {
     let adb_path = resource_path
         .join("resources")
         .join("platform-tools")
-        .join("adb.exe");
+        .join(format!("adb{}", std::env::consts::EXE_SUFFIX));
 
     if adb_path.exists() {
         Ok(adb_path.to_string_lossy().to_string())
