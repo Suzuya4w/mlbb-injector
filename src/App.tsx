@@ -208,12 +208,18 @@ const DICT = {
   }
 };
 
+
+type Device = {
+  id: string;
+  name: string;
+};
+
 type Lang = "en" | "id";
 
 let toastIdCounter = 0;
 
 function App() {
-  const [lang, setLang] = createSignal<Lang>((localStorage.getItem("lang") as Lang) || "id");
+  const [lang, setLang] = createSignal<Lang>((localStorage.getItem("lang") as Lang) || "en");
 
   const [confirmState, setConfirmState] = createSignal({
     isOpen: false,
@@ -240,7 +246,7 @@ function App() {
     return str;
   };
 
-  const [devices, setDevices] = createSignal<string[]>([]);
+  const [devices, setDevices] = createSignal<Device[]>([]);
   const [selectedDevice, setSelectedDevice] = createSignal("");
   const [logs, setLogs] = createSignal<string[]>([]);
   const [isInjecting, setIsInjecting] = createSignal(false);
@@ -281,10 +287,10 @@ function App() {
     try {
       appendLog(t("log_boot"));
       appendLog(t("log_connecting"));
-      const result: string[] = await invoke("get_devices");
+      const result: Device[] = await invoke("get_devices");
       setDevices(result);
       if (result.length > 0) {
-        setSelectedDevice(result[0]);
+        setSelectedDevice(result[0].id);
         appendLog(t("log_success_device", { count: result.length }));
       } else {
         appendLog(t("log_fail_device"));

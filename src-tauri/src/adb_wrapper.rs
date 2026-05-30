@@ -46,6 +46,13 @@ impl serde::Serialize for AdbError {
 }
 
 #[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+pub struct Device {
+    pub id: String,
+    pub name: String,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct HeroMods {
     pub hero_name: String,
     pub skins: Vec<String>,
@@ -69,10 +76,10 @@ fn get_adb_path(app_handle: &AppHandle) -> Result<String, AdbError> {
 }
 
 #[tauri::command]
-pub fn get_devices(app_handle: AppHandle) -> Result<Vec<String>, AdbError> {
+pub fn get_devices(app_handle: AppHandle) -> Result<Vec<Device>, AdbError> {
     let adb_path = get_adb_path(&app_handle)?;
     let output = create_command(&adb_path)
-        .args(["devices"])
+        .args(["devices", "-l"])
         .output()
         .map_err(|e| AdbError::Execution(e.to_string()))?;
 
@@ -82,8 +89,16 @@ pub fn get_devices(app_handle: AppHandle) -> Result<Vec<String>, AdbError> {
     for line in stdout.lines().skip(1) {
         let trimmed = line.trim();
         if !trimmed.is_empty() {
-            if let Some(device_id) = trimmed.split_whitespace().next() {
-                devices.push(device_id.to_string());
+            let parts: Vec<&str> = trimmed.split_whitespace().collect();
+            if parts.len() >= 2 && parts[1] == "device" {
+                let id = parts[0].to_string();
+                let mut name = id.clone();
+                for part in parts.iter().skip(2) {
+                    if part.starts_with("model:") {
+                        name = part.replace("model:", "").replace("_", " ");
+                    }
+                }
+                devices.push(Device { id, name });
             }
         }
     }
