@@ -471,16 +471,12 @@ pub async fn inject_zip_script(
         {
             if entry.file_type().is_dir() {
                 let name = entry.file_name().to_string_lossy();
-                if name == "com.mobile.legends" {
-                    target_dir = Some(entry.path().to_path_buf());
-                    _dest_path_on_device = "/sdcard/Android/data/com.mobile.legends";
-                    break;
-                } else if name == "assets" {
+                if name == "assets" {
                     target_dir = Some(entry.path().to_path_buf());
                     _dest_path_on_device =
                         "/sdcard/Android/data/com.mobile.legends/files/dragon2017/assets";
                     break;
-                } else if name == "Art" || name == "Audio" || name == "UI" {
+                } else if name == "Art" || name == "Audio" || name == "UI" || name == "Document" {
                     target_dir = Some(entry.path().parent().unwrap().to_path_buf());
                     _dest_path_on_device =
                         "/sdcard/Android/data/com.mobile.legends/files/dragon2017/assets";
