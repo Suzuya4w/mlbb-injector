@@ -6,6 +6,12 @@
 
 A high-performance, cyberpunk-themed desktop application built with **Tauri 2 (Rust + SolidJS)** to seamlessly manage Mobile Legends: Bang Bang assets on Android devices. This tool bypasses the need for manual file managers by interacting directly with the Android filesystem via ADB.
 
+<br>
+<div align="center">
+  <img src="public/Screenshot.png" width="800" alt="MLBB Injector Screenshot">
+</div>
+
+
 ## ✨ Features
 
 - ⚡ **Direct Mod Installer:** Inject `.zip` mods or direct MediaFire links straight to your connected Android device without manual extraction or copying.
