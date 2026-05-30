@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400..700&family=Inconsolata:wght@400..900&family=JetBrains+Mono:wght@400..800&family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Share+Tech+Mono&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=VT323&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', Circular, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: 'VCR OSD Mono', 'JetBrains Mono', 'Space Mono', 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-hacked: 'Hacked', sans-serif;
+  --font-jet: 'Outfit', sans-serif;
+  --font-desc: 'Space Grotesk', sans-serif;
+  --font-perfect: 'Glass_TTY_VT220', sans-serif;
+  --font-pixel: 'PixelOperatorMono', 'VT323', sans-serif;
+  --font-fira: 'Fira Code', monospace;
+  --font-inconsolata: 'Inconsolata', monospace;
+  --font-vt323: 'VT323', monospace;
+  --font-share: 'Share Tech Mono', monospace;
+  --font-space-mono: 'Space Mono', monospace;
+}
+
+:root {
+  color-scheme: light dark;
+  background-color: #0A0A0A;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for webkit */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #333;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@keyframes fadeZoomIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-zoom {
+    animation: fadeZoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeBg {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.animate-fade-bg {
+    animation: fadeBg 0.2s ease-out forwards;
+}
