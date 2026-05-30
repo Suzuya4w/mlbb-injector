@@ -630,7 +630,7 @@ function App() {
             >
                 {devices().length === 0 && <option value="">{t("not_found")}</option>}
                 <For each={devices()}>
-                    {(d) => <option value={d}>{d}</option>}
+                    {(d) => <option value={d.id}>{d.name}</option>}
                 </For>
             </select>
         </div>

@@ -1,0 +1,4 @@
+- [x] Change default language to "en" in `src/App.tsx`.
+- [x] Refactor `get_devices` to return a `Device` object in `adb_wrapper.rs`.
+- [x] Update frontend to handle `Device[]` in `src/App.tsx`.
+- [x] Create walkthrough.
