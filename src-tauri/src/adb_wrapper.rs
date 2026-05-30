@@ -1,7 +1,6 @@
 use reqwest;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -45,7 +44,6 @@ impl serde::Serialize for AdbError {
     }
 }
 
-#[derive(Serialize, Deserialize)]
 #[derive(Serialize, Deserialize)]
 pub struct Device {
     pub id: String,
@@ -112,11 +110,11 @@ pub fn scan_local_mods(_app_handle: AppHandle) -> Result<Vec<HeroMods>, String> 
 
 #[tauri::command]
 pub fn push_file(
-    app_handle: AppHandle,
-    device_id: String,
-    local_path: String,
-    target_folder: String,
-    file_name: String,
+    _app_handle: AppHandle,
+    _device_id: String,
+    _local_path: String,
+    _target_folder: String,
+    _file_name: String,
 ) -> Result<String, AdbError> {
     Ok("Not used".to_string())
 }
@@ -465,7 +463,7 @@ pub async fn inject_zip_script(
         }
 
         let mut target_dir = None;
-        let mut dest_path_on_device = "";
+        let mut _dest_path_on_device = "";
 
         for entry in walkdir::WalkDir::new(&extract_dir)
             .into_iter()
@@ -475,16 +473,16 @@ pub async fn inject_zip_script(
                 let name = entry.file_name().to_string_lossy();
                 if name == "com.mobile.legends" {
                     target_dir = Some(entry.path().to_path_buf());
-                    dest_path_on_device = "/sdcard/Android/data/com.mobile.legends";
+                    _dest_path_on_device = "/sdcard/Android/data/com.mobile.legends";
                     break;
                 } else if name == "assets" {
                     target_dir = Some(entry.path().to_path_buf());
-                    dest_path_on_device =
+                    _dest_path_on_device =
                         "/sdcard/Android/data/com.mobile.legends/files/dragon2017/assets";
                     break;
                 } else if name == "Art" || name == "Audio" || name == "UI" {
                     target_dir = Some(entry.path().parent().unwrap().to_path_buf());
-                    dest_path_on_device =
+                    _dest_path_on_device =
                         "/sdcard/Android/data/com.mobile.legends/files/dragon2017/assets";
                     break;
                 }
