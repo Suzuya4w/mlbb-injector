@@ -19,7 +19,8 @@ pub fn run() {
             adb_wrapper::save_preset,
             adb_wrapper::delete_preset,
             adb_wrapper::export_presets,
-            adb_wrapper::import_presets
+            adb_wrapper::import_presets,
+            adb_wrapper::parse_extract_list
         ]);
 
     let app = builder.build(tauri::generate_context!())

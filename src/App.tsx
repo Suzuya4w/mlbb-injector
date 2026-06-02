@@ -66,6 +66,8 @@ const DICT = {
     toast_extract_failed: "Extraction failed:",
     toast_scan_success: "Successfully detected {count} files",
     toast_scan_failed: "Scan failed:",
+    toast_import_list_success: "Extraction list loaded successfully",
+    import_list: "[ IMPORT JSON/TXT LIST ]",
     toast_preset_saved: "Preset saved",
     toast_preset_save_failed: "Failed to save preset:",
     toast_preset_deleted: "Preset deleted",
@@ -162,6 +164,8 @@ const DICT = {
     toast_extract_failed: "Ekstraksi gagal:",
     toast_scan_success: "Berhasil mendeteksi {count} nama file",
     toast_scan_failed: "Gagal memindai:",
+    toast_import_list_success: "Daftar ekstraksi berhasil dimuat",
+    import_list: "[ IMPOR DAFTAR JSON/TXT ]",
     toast_preset_saved: "Preset disimpan",
     toast_preset_save_failed: "Gagal menyimpan preset:",
     toast_preset_deleted: "Preset dihapus",
@@ -498,6 +502,19 @@ function App() {
     }
   }
 
+  async function handleImportList() {
+      try {
+          const importPath = await open({ multiple: false, filters: [{ name: "List Files", extensions: ["json", "txt"] }] });
+          if (importPath && typeof importPath === 'string') {
+              const keywordsStr: string = await invoke("parse_extract_list", { srcPath: importPath });
+              setDumpKeyword(keywordsStr);
+              addToast(t("toast_import_list_success"), "success");
+          }
+      } catch (e) {
+          addToast(`Error: ${e}`, "error");
+      }
+  }
+
   async function loadPresets() {
       try {
           const res: any[] = await invoke("load_presets");
@@ -739,20 +756,29 @@ function App() {
                     </div>
 
                     <div class="flex mt-2">
-                        <button 
-                            onClick={handleScanFolder}
-                            disabled={isInjecting()}
-                            class="bg-transparent text-white border-2 border-r-0 border-white/40 hover:bg-white hover:text-black hover:border-white disabled:border-white/10 disabled:text-white/20 disabled:hover:bg-transparent font-bold px-6 py-5 text-sm uppercase tracking-widest cursor-pointer transition-colors"
-                        >
-                            {t("scan_folder")}
-                        </button>
-                        <input 
-                            type="text" 
+                        <div class="flex flex-col border-2 border-r-0 border-white/40">
+                            <button 
+                                onClick={handleScanFolder}
+                                disabled={isInjecting()}
+                                class="flex-1 bg-transparent text-white border-b-2 border-white/40 hover:bg-white hover:text-black hover:border-white disabled:border-white/10 disabled:text-white/20 disabled:hover:bg-transparent font-bold px-6 py-2 text-xs uppercase tracking-widest cursor-pointer transition-colors"
+                            >
+                                {t("scan_folder")}
+                            </button>
+                            <button 
+                                onClick={handleImportList}
+                                disabled={isInjecting()}
+                                class="flex-1 bg-transparent text-white hover:bg-white hover:text-black hover:border-white disabled:border-white/10 disabled:text-white/20 disabled:hover:bg-transparent font-bold px-6 py-2 text-xs uppercase tracking-widest cursor-pointer transition-colors"
+                            >
+                                {t("import_list")}
+                            </button>
+                        </div>
+                        <textarea 
                             placeholder={t("dump_placeholder")}
-                            class="flex-1 bg-transparent border-2 border-r-0 border-white/40 text-white px-6 py-5 text-base focus:outline-none focus:border-[#FF8A00] placeholder:text-white/30 text-center tracking-widest font-bold"
+                            class="flex-1 bg-transparent border-2 border-r-0 border-white/40 text-white px-6 py-4 text-sm focus:outline-none focus:border-[#FF8A00] placeholder:text-white/30 tracking-widest font-bold resize-none custom-scrollbar"
                             value={dumpKeyword()}
                             onInput={(e) => setDumpKeyword(e.target.value)}
                             disabled={isInjecting()}
+                            rows={3}
                         />
                         <button 
                             onClick={handleDumpAsset}
@@ -865,7 +891,7 @@ function App() {
                                 {t("save")}
                             </button>
                         </div>
-                        <div class="mt-2 text-xs text-white/40">{t("current_keywords")} <span class="font-fira tracking-wider">{dumpKeyword() || t("none")}</span></div>
+                        <div class="mt-2 text-xs text-white/40">{t("current_keywords")} <span class="font-fira tracking-wider break-all">{dumpKeyword() || t("none")}</span></div>
                     </div>
 
                     {/* PRESET LIST */}

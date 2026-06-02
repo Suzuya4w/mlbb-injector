@@ -981,3 +981,69 @@ pub fn import_presets(app_handle: tauri::AppHandle, src_path: String) -> Result<
     fs::write(get_preset_path(&app_handle)?, merged_data).map_err(|e| e.to_string())?;
     Ok(())
 }
+
+#[tauri::command]
+pub fn parse_extract_list(src_path: String) -> Result<String, String> {
+    let data = fs::read_to_string(&src_path).map_err(|e| format!("Gagal membaca file: {}", e))?;
+    
+    let is_json = src_path.to_lowercase().ends_with(".json");
+    let mut keywords = Vec::new();
+
+    if is_json {
+        let parsed: serde_json::Value = serde_json::from_str(&data).map_err(|e| format!("Format JSON tidak valid: {}", e))?;
+        
+        if let Some(arr) = parsed.as_array() {
+            for item in arr {
+                if let Some(s) = item.as_str() {
+                    // Array of strings
+                    let kw = s.trim();
+                    if !kw.is_empty() {
+                        keywords.push(kw.to_string());
+                    }
+                } else if let Some(obj) = item.as_object() {
+                    // Array of objects (like exported DB presets)
+                    if let Some(files) = obj.get("files").and_then(|v| v.as_str()) {
+                        for k in files.split(',') {
+                            let kw = k.trim();
+                            if !kw.is_empty() {
+                                keywords.push(kw.to_string());
+                            }
+                        }
+                    }
+                }
+            }
+        } else if let Some(obj) = parsed.as_object() {
+            // Single object with files array or string
+            if let Some(files) = obj.get("files").and_then(|v| v.as_str()) {
+                for k in files.split(',') {
+                    let kw = k.trim();
+                    if !kw.is_empty() {
+                        keywords.push(kw.to_string());
+                    }
+                }
+            } else if let Some(files_arr) = obj.get("files").and_then(|v| v.as_array()) {
+                for item in files_arr {
+                    if let Some(s) = item.as_str() {
+                        let kw = s.trim();
+                        if !kw.is_empty() {
+                            keywords.push(kw.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    } else {
+        for line in data.lines() {
+            let kw = line.trim();
+            if !kw.is_empty() {
+                keywords.push(kw.to_string());
+            }
+        }
+    }
+
+    if keywords.is_empty() {
+        return Err("File tidak memiliki kata kunci!".to_string());
+    }
+
+    Ok(keywords.join(","))
+}
